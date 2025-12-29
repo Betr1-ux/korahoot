@@ -3,159 +3,98 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sports TV - جدول المباريات</title>
-
+<title>Sports TV</title>
 <style>
-body{
-  margin:0;
-  font-family:Tahoma,Arial;
-  background:#0b0b0b;
-  color:#fff;
-}
+body{margin:0;font-family:tahoma;background:#0b0b0b;color:#fff}
+#lockScreen{position:fixed;inset:0;background:#080808;display:flex;justify-content:center;align-items:center;z-index:9999}
+.lock-box{background:#121212;padding:25px;width:280px;border-radius:14px;text-align:center}
+.lock-box input,button{width:100%;height:42px;border:none;border-radius:10px;margin-top:10px}
+button{background:#c90000;color:#fff;font-weight:bold}
+#error{color:#ff4d4d;display:none}
+#content{display:none}
 
-/* شاشة القفل */
-#lockScreen{
-  position:fixed;
-  inset:0;
-  background:#080808;
-  z-index:999999;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.lock-box{
-  background:#121212;
-  padding:25px;
-  border-radius:14px;
-  width:280px;
-  text-align:center;
-  box-shadow:0 0 25px rgba(180,0,0,.6);
-}
-.lock-box h2{
-  color:#c90000;
-  margin-bottom:15px;
-}
-.lock-box input{
-  width:100%;
-  height:42px;
-  border-radius:10px;
-  border:none;
-  font-size:16px;
-  text-align:center;
-  margin-bottom:12px;
-}
-.lock-box button{
-  width:100%;
-  height:42px;
-  border:none;
-  border-radius:10px;
-  background:#c90000;
-  color:#fff;
-  font-size:16px;
-  font-weight:bold;
-  cursor:pointer;
-}
-#lockError{
-  display:none;
-  color:#ff4d4d;
-  margin-top:8px;
-}
-
-/* المحتوى */
-#content{
-  display:none;
-}
-
-/* الهيدر */
-.top-bar{
-  background:#000;
-  padding:16px 10px;
-  text-align:center;
-}
-.top-bar h1{
-  margin:0;
-  font-size:22px;
-  color:#fff;
-  text-shadow:0 0 8px #c90000;
-}
-.red-line{
-  height:3px;
-  background:#c90000;
-  margin-top:12px;
-}
-
-/* رسالة */
-.top-notice{
-  background:#121212;
-  margin:12px;
-  padding:12px;
-  border-radius:12px;
-  border-right:4px solid #c90000;
-  font-size:14px;
-  line-height:1.7;
-}
-
-/* قص iframe */
-.iframe-box{
-  width:100%;
-  height:78vh;
-  overflow:hidden;
-  position:relative;
-  background:#000;
-}
-
-.iframe-box iframe{
-  position:absolute;
-  top:-150px; /* قص Koora live */
-  left:0;
-  width:100%;
-  height:calc(100% + 150px);
-  border:none;
-}
+.top-header{background:#111;padding:14px 10px;text-align:center;border-bottom:2px solid #b30000}
+.title{font-size:22px;font-weight:bold;color:#fff;margin-bottom:8px;text-shadow:0 0 6px #b30000}
+.visits-box{display:inline-block;background:#000;color:#00ff66;padding:8px 18px;border-radius:12px;font-size:15px;font-weight:bold;box-shadow:0 0 10px rgba(0,255,100,.3)}
+iframe{width:100%;height:85vh;border:none;margin-top:10px}
 </style>
 </head>
-
 <body>
 
-<!-- شاشة القفل -->
 <div id="lockScreen">
   <div class="lock-box">
-    <h2>🔒 أدخل كود الدخول</h2>
-    <input type="password" id="lockCode" placeholder="أدخل الكود">
+    <h3>🔒 أدخل كود الدخول</h3>
+    <input id="lockCode" placeholder="الكود">
     <button onclick="unlock()">دخول</button>
-    <div id="lockError">❌ الكود غير صحيح</div>
+    <div id="error">الكود غير صالح</div>
   </div>
 </div>
 
-<!-- المحتوى -->
 <div id="content">
-
-  <div class="top-bar">
-    <h1>Sports TV 📺</h1>
-    <div class="red-line"></div>
+  <div class="top-header">
+    <div class="title">Sports TV</div>
+    <div class="visits-box">
+      عدد الزيارات المتبقية: <span id="visitsCount">5</span>
+    </div>
   </div>
 
-  <div class="top-notice">
-    اختر المباراة من جدول المباريات 👇<br>
-    سيتم فتح المشاهدة مباشرة بدون إعلانات
-  </div>
-
-  <div class="iframe-box">
-    <iframe src="https://www.fullmatch-hd.com/"></iframe>
-  </div>
-
+  <iframe src="https://www.fullmatch-hd.com/"></iframe>
 </div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAUc2cH9gVE7RECiW19XQXjNZQxVH96sFE",
+  authDomain: "zezo-59a8d.firebaseapp.com",
+  databaseURL: "https://zezo-59a8d-default-rtdb.firebaseio.com",
+  projectId: "zezo-59a8d",
+  storageBucket: "zezo-59a8d.appspot.com",
+  messagingSenderId: "49183098248",
+  appId: "1:49183098248:web:37e3fb16744042a1bb263d"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+let currentCode = "";
+
 function unlock(){
-  const code = document.getElementById("lockCode").value;
-  if(code === "11411"){
+  const code = document.getElementById("lockCode").value.trim();
+  if(!code) return;
+
+  db.ref("codes/"+code).get().then(snap=>{
+    if(!snap.exists()){ showError(); return; }
+    const data = snap.val();
+    if(!data.active || data.visits <= 0){ showError(); return; }
+
+    currentCode = code;
+    db.ref("codes/"+code+"/visits").set(data.visits - 1);
+
+    document.getElementById("visitsCount").innerText = data.visits - 1;
     document.getElementById("lockScreen").style.display="none";
     document.getElementById("content").style.display="block";
-  }else{
-    document.getElementById("lockError").style.display="block";
-  }
+
+    watchStatus();
+  });
 }
+
+function watchStatus(){
+  db.ref("codes/"+currentCode).on("value", snap=>{
+    if(!snap.exists()){ logout(); return; }
+    const data = snap.val();
+    if(!data.active || data.visits <= 0){ logout(); return; }
+    document.getElementById("visitsCount").innerText = data.visits;
+  });
+}
+
+function logout(){
+  document.getElementById("content").style.display="none";
+  document.getElementById("lockScreen").style.display="flex";
+  document.getElementById("error").style.display="block";
+}
+
+function showError(){ document.getElementById("error").style.display="block"; }
 </script>
 
 </body>
