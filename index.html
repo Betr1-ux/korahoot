@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html dir="rtl" lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>قناة بي ان سبورت بريميوم الاولى beIN Premium 1HD</title>
+<title>Sports TV - جدول المباريات</title>
 
 <style>
 body{
   margin:0;
   font-family:Tahoma,Arial;
+  background:#000;
 }
 
 /* شاشة القفل */
@@ -16,7 +17,7 @@ body{
   position:fixed;
   inset:0;
   background:#0c0c0c;
-  z-index:9999999;
+  z-index:999999;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -25,9 +26,9 @@ body{
   background:#111;
   padding:25px;
   border-radius:12px;
-  text-align:center;
   width:280px;
-  box-shadow:0 0 20px rgba(255,0,0,.4);
+  text-align:center;
+  box-shadow:0 0 20px rgba(255,0,0,.5);
 }
 .lock-box h2{
   color:#ff3030;
@@ -38,10 +39,9 @@ body{
   height:40px;
   border-radius:8px;
   border:none;
-  padding:0 10px;
   font-size:16px;
-  margin-bottom:12px;
   text-align:center;
+  margin-bottom:10px;
 }
 .lock-box button{
   width:100%;
@@ -55,15 +55,44 @@ body{
   cursor:pointer;
 }
 #lockError{
-  color:#ff3030;
-  margin-top:10px;
   display:none;
+  color:#ff3030;
+  margin-top:8px;
+}
+
+/* المحتوى */
+#content{
+  display:none;
+}
+
+/* الهيدر */
+.header{
+  background:#0c0c0c;
+  color:#fff;
+  padding:14px;
+  text-align:center;
+  font-size:20px;
+  font-weight:bold;
+  border-bottom:3px solid #ff3030;
+  text-shadow:0 0 6px #ff3030;
+}
+
+/* تنبيه */
+.notice{
+  background:#111;
+  color:#fff;
+  margin:10px;
+  padding:10px;
+  border-radius:8px;
+  border-right:4px solid #ff3030;
   font-size:14px;
 }
 
-/* محتوى الصفحة */
-.page-content{
-  display:none;
+/* iframe */
+iframe{
+  width:100%;
+  height:85vh;
+  border:none;
 }
 </style>
 </head>
@@ -73,54 +102,36 @@ body{
 <!-- شاشة القفل -->
 <div id="lockScreen">
   <div class="lock-box">
-    <h2>🔒 أدخل كود التشغيل</h2>
+    <h2>🔒 أدخل كود الدخول</h2>
     <input type="password" id="lockCode" placeholder="أدخل الكود">
-    <button onclick="checkCode()">دخول</button>
-    <p id="lockError">❌ الكود غير صحيح</p>
+    <button onclick="unlock()">دخول</button>
+    <div id="lockError">❌ الكود غير صحيح</div>
   </div>
 </div>
 
-<!-- محتوى الصفحة الأصلي -->
-<div class="page-content" id="pageContent">
+<!-- المحتوى -->
+<div id="content">
 
-<div style="background:#0c0c0c;color:#fff;padding:14px;text-align:center;
-border-radius:10px;margin:14px;font-size:16px;font-weight:bold;
-text-shadow:0 0 6px #ff3030;border-left:5px solid #ff3030;">
-تنبيه: يتم تحديث الصفحة تلقائيًا عند توقف البث
-</div>
+  <div class="header">📺 Sports TV</div>
 
-<iframe 
-src="https://d.sia.watch/albaplayer/pemium-1/" 
-width="100%" 
-height="500" 
-frameborder="0" 
-allowfullscreen>
-</iframe>
+  <div class="notice">
+    اختر المباراة من جدول المباريات 👇  
+    سيتم فتح المشاهدة مباشرة بدون إعلانات
+  </div>
 
-<div style="padding:15px;font-size:16px;line-height:30px">
-<h3>الجودة الفنية:</h3>
-<p>تقدم قناة beIN sports محتوى رياضي حصري بجودة HD و 4K.</p>
-<p>✔ دقة صورة عالية</p>
-<p>✔ صوت نقي</p>
-<p>✔ بث ثابت وسريع</p>
-
-<h3>beIN sports premium 1</h3>
-<p>
-تم الاشتراك مجانيه الفتره محدود كود شفره الحاليه:11411.بدون اعلانات
-لتجديد الاشتراك: تواصل عبر التلجرام: بدون اعلانات: @bebo0014
-</p>
-</div>
+  <!-- جدول المباريات -->
+  <iframe src="https://www.fullmatch-hd.com/"></iframe>
 
 </div>
 
 <script>
-function checkCode(){
+function unlock(){
   const code = document.getElementById("lockCode").value;
   if(code === "11411"){
-    document.getElementById("lockScreen").style.display = "none";
-    document.getElementById("pageContent").style.display = "block";
+    document.getElementById("lockScreen").style.display="none";
+    document.getElementById("content").style.display="block";
   }else{
-    document.getElementById("lockError").style.display = "block";
+    document.getElementById("lockError").style.display="block";
   }
 }
 </script>
