@@ -2,114 +2,36 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sports TV</title>
-
 <style>
-body{
-  margin:0;
-  font-family:tahoma;
-  background:#0b0b0b;
-  color:#fff;
-}
+body{margin:0;font-family:tahoma;background:#0b0b0b;color:#fff;}
 
 /* ===== Lock Screen ===== */
-#lockScreen{
-  position:fixed;
-  inset:0;
-  background:#080808;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  z-index:9999;
-}
-.lock-box{
-  background:#121212;
-  padding:25px;
-  width:280px;
-  border-radius:14px;
-  text-align:center;
-}
-.lock-box input,
-.lock-box button{
-  width:100%;
-  height:42px;
-  border:none;
-  border-radius:10px;
-  margin-top:10px;
-}
+#lockScreen{position:fixed;inset:0;background:#080808;display:flex;justify-content:center;align-items:center;z-index:9999;}
+.lock-box{background:#121212;padding:25px;width:280px;border-radius:14px;text-align:center;}
+.lock-box input,.lock-box button{width:100%;height:42px;border:none;border-radius:10px;margin-top:10px;}
 .lock-box input{padding:0 10px;}
-.lock-box button{
-  background:#c90000;
-  color:#fff;
-  font-weight:bold;
-}
-#error{color:#ff4d4d;display:none;margin-top:10px}
-#content{display:none}
+.lock-box button{background:#c90000;color:#fff;font-weight:bold;}
+#error{color:#ff4d4d;display:none;margin-top:10px;}
+#content{display:none;padding:10px;}
 
 /* ===== Header ===== */
-.top-header{
-  background:#111;
-  padding:14px;
-  text-align:center;
-  border-bottom:2px solid #b30000;
-}
-.title{
-  font-size:22px;
-  font-weight:bold;
-  text-shadow:0 0 6px #b30000;
-}
-.visits-box{
-  margin-top:8px;
-  background:#000;
-  padding:10px;
-  border-radius:12px;
-  color:#00ff66;
-  font-weight:bold;
-}
+.top-header{background:#111;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #b30000;}
+.header-title{font-size:22px;font-weight:bold;text-shadow:0 0 6px #b30000;}
+.visits-box{background:#000;padding:5px 10px;border-radius:12px;color:#00ff66;font-weight:bold;}
 
 /* ===== Channels ===== */
-.channels{
-  padding:15px;
-  display:grid;
-  grid-template-columns:1fr;
-  gap:12px;
-}
-.channel-btn{
-  background:#1a1a1a;
-  padding:15px;
-  border-radius:14px;
-  text-align:center;
-  font-size:18px;
-  font-weight:bold;
-  cursor:pointer;
-  border:1px solid #333;
-}
-.channel-btn:hover{
-  background:#c90000;
-}
+.channels{padding:15px;display:grid;grid-template-columns:1fr;gap:12px;margin-top:10px;}
+.channel-btn{background:#1a1a1a;padding:15px;border-radius:14px;text-align:center;font-size:18px;font-weight:bold;cursor:pointer;border:1px solid #333;}
+.channel-btn:hover{background:#c90000;}
 
 /* ===== Player ===== */
-#playerBox{
-  display:none;
-  height:80vh;
-}
-iframe{
-  width:100%;
-  height:100%;
-  border:none;
-}
-.back-btn{
-  background:#333;
-  margin:10px;
-  padding:10px;
-  border-radius:10px;
-  text-align:center;
-  cursor:pointer;
-}
+#playerBox{display:none;position:relative;height:100vh;width:100vw;}
+iframe{width:100%;height:100%;border:none;border-radius:10px;background:#000;}
+.back-btn{position:absolute;top:10px;left:10px;background:#333;color:#fff;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:14px;z-index:20;}
 </style>
 </head>
-
 <body>
 
 <!-- ===== Lock Screen ===== -->
@@ -124,16 +46,15 @@ iframe{
 
 <!-- ===== Content ===== -->
 <div id="content">
-
-  <div class="top-header">
-    <div class="title">Sports TV</div>
-    <div class="visits-box">
-      👤 <span id="userName">---</span><br>
-      عدد الزيارات: <span id="visitsCount">0</span>
+  <!-- Header -->
+  <div class="top-header" id="headerBox">
+    <div class="header-title" id="siteTitle">Sports TV</div>
+    <div class="visits-box" id="visitsBox">
+      👤 <span id="userName">---</span> | زيارات: <span id="visitsCount">0</span>
     </div>
   </div>
 
-  <!-- ===== Channels List ===== -->
+  <!-- Channels List -->
   <div class="channels" id="channelsBox">
     <div class="channel-btn" onclick="openChannel(1)">beIN sports 1</div>
     <div class="channel-btn" onclick="openChannel(2)">beIN sports 2</div>
@@ -141,12 +62,11 @@ iframe{
     <div class="channel-btn" onclick="openChannel(4)">beIN sports 4</div>
   </div>
 
-  <!-- ===== Player ===== -->
+  <!-- Player -->
   <div id="playerBox">
-    <div class="back-btn" onclick="backToChannels()">⬅ رجوع للقنوات</div>
+    <div class="back-btn" onclick="backToChannels()">⬅</div>
     <iframe id="playerFrame" allowfullscreen></iframe>
   </div>
-
 </div>
 
 <!-- ===== Firebase ===== -->
@@ -170,6 +90,7 @@ const presenceRef = firebase.database().ref(".info/connected");
 
 let currentCode="";
 
+// روابط القنوات
 const links={
   1:"https://mandoosports.yoo7.com/h27-html?id=aHR0cHM6Ly9saXZlLm1hbmRvcGMyMDE5LndvcmtlcnMuZGV2Lz91cmw9aHR0cDovL2hldDAwMC40cm91d2FuZGEtc2hvcC5zdG9yZS9saXZlLzkxODQ1NDU3ODAwMS9pbmRleC5tM3U4",
   2:"https://mandoosports.yoo7.com/h27-html?id=aHR0cHM6Ly9saXZlLm1hbmRvcGMyMDE5LndvcmtlcnMuZGV2Lz91cmw9aHR0cDovL2hldDAwMC40cm91d2FuZGEtc2hvcC5zdG9yZS9saXZlLzY5ODU0MjExL2luZGV4Lm0zdTg=",
@@ -180,23 +101,18 @@ const links={
 function unlock(){
   const code=document.getElementById("lockCode").value.trim();
   if(!code) return;
-
   db.ref("codes/"+code).get().then(snap=>{
     if(!snap.exists()||!snap.val().active||snap.val().visits<=0){
       document.getElementById("error").style.display="block";
       return;
     }
-
     currentCode=code;
     const data=snap.val();
     db.ref("codes/"+code+"/visits").set(data.visits-1);
-
     document.getElementById("userName").innerText=data.name;
     document.getElementById("visitsCount").innerText=data.visits-1;
-
     document.getElementById("lockScreen").style.display="none";
     document.getElementById("content").style.display="block";
-
     const onlineRef=db.ref("codes/"+code+"/online");
     presenceRef.on("value",s=>{
       if(s.val()===true){
@@ -204,23 +120,13 @@ function unlock(){
         onlineRef.onDisconnect().set(false);
       }
     });
-
-    watchStatus();
-  });
-}
-
-function watchStatus(){
-  db.ref("codes/"+currentCode).on("value",snap=>{
-    if(!snap.exists()||!snap.val().active||snap.val().visits<=0){
-      location.reload();
-    }
-    document.getElementById("visitsCount").innerText=snap.val().visits;
   });
 }
 
 function openChannel(n){
   document.getElementById("channelsBox").style.display="none";
   document.getElementById("playerBox").style.display="block";
+  document.getElementById("headerBox").style.display="none"; // كل شيء فوق يختفي
   document.getElementById("playerFrame").src=links[n];
 }
 
@@ -228,8 +134,8 @@ function backToChannels(){
   document.getElementById("playerFrame").src="";
   document.getElementById("playerBox").style.display="none";
   document.getElementById("channelsBox").style.display="grid";
+  document.getElementById("headerBox").style.display="flex"; // يرجع كل شيء
 }
 </script>
-
 </body>
 </html>
