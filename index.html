@@ -2,9 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Sports TV</title>
 
 <style>
@@ -25,7 +23,6 @@ body{
   align-items:center;
   z-index:9999;
 }
-
 .lock-box{
   background:#121212;
   padding:25px;
@@ -33,7 +30,6 @@ body{
   border-radius:14px;
   text-align:center;
 }
-
 .lock-box input,
 .lock-box button{
   width:100%;
@@ -42,45 +38,13 @@ body{
   border-radius:10px;
   margin-top:10px;
 }
-
-.lock-box input{
-  padding:0 10px;
-}
-
+.lock-box input{padding:0 10px;}
 .lock-box button{
   background:#c90000;
   color:#fff;
   font-weight:bold;
 }
-
-/* ===== Telegram Card ===== */
-.telegram-card{
-  margin-top:15px;
-  padding:12px;
-  background:#0f1c24;
-  border:1px solid #0088cc;
-  border-radius:12px;
-  font-size:14px;
-}
-
-.telegram-card a{
-  display:block;
-  margin-top:6px;
-  color:#00aaff;
-  font-weight:bold;
-  text-decoration:none;
-}
-
-.telegram-card a:hover{
-  text-decoration:underline;
-}
-
-#error{
-  color:#ff4d4d;
-  display:none;
-  margin-top:10px;
-}
-
+#error{color:#ff4d4d;display:none;margin-top:10px}
 #content{display:none}
 
 /* ===== Header ===== */
@@ -90,13 +54,11 @@ body{
   text-align:center;
   border-bottom:2px solid #b30000;
 }
-
 .title{
   font-size:22px;
   font-weight:bold;
   text-shadow:0 0 6px #b30000;
 }
-
 .visits-box{
   margin-top:8px;
   background:#000;
@@ -106,27 +68,44 @@ body{
   font-weight:bold;
 }
 
-/* ===== Iframe ===== */
-.iframe-wrapper{
-  position:relative;
-  height:85vh;
+/* ===== Channels ===== */
+.channels{
+  padding:15px;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+}
+.channel-btn{
+  background:#1a1a1a;
+  padding:15px;
+  border-radius:14px;
+  text-align:center;
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+  border:1px solid #333;
+}
+.channel-btn:hover{
+  background:#c90000;
 }
 
-.iframe-cover{
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:80px;
-  background:#0b0b0b;
-  z-index:10;
-  pointer-events:none;
+/* ===== Player ===== */
+#playerBox{
+  display:none;
+  height:80vh;
 }
-
 iframe{
-  width:100vw;
-  height:100vh;
+  width:100%;
+  height:100%;
   border:none;
+}
+.back-btn{
+  background:#333;
+  margin:10px;
+  padding:10px;
+  border-radius:10px;
+  text-align:center;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -137,25 +116,15 @@ iframe{
 <div id="lockScreen">
   <div class="lock-box">
     <h3>🔒 أدخل كود الدخول</h3>
-
     <input id="lockCode" placeholder="الكود">
-
     <button onclick="unlock()">دخول</button>
-
-    <!-- Telegram Card -->
-    <div class="telegram-card">
-      انضم لينا على تلجرام ليصلك أكواد مجانية
-      <a href="https://t.me/spoortsTV" target="_blank">
-        🔗 الدخول إلى قناة Telegram
-      </a>
-    </div>
-
     <div id="error">تم إيقاف أو حذف الكود</div>
   </div>
 </div>
 
 <!-- ===== Content ===== -->
 <div id="content">
+
   <div class="top-header">
     <div class="title">Sports TV</div>
     <div class="visits-box">
@@ -164,10 +133,20 @@ iframe{
     </div>
   </div>
 
-  <div class="iframe-wrapper">
-    <div class="iframe-cover"></div>
-    <iframe src="https://www.fullmatch-hd.com/" allowfullscreen></iframe>
+  <!-- ===== Channels List ===== -->
+  <div class="channels" id="channelsBox">
+    <div class="channel-btn" onclick="openChannel(1)">beIN sports 1</div>
+    <div class="channel-btn" onclick="openChannel(2)">beIN sports 2</div>
+    <div class="channel-btn" onclick="openChannel(3)">beIN sports 3</div>
+    <div class="channel-btn" onclick="openChannel(4)">beIN sports 4</div>
   </div>
+
+  <!-- ===== Player ===== -->
+  <div id="playerBox">
+    <div class="back-btn" onclick="backToChannels()">⬅ رجوع للقنوات</div>
+    <iframe id="playerFrame" allowfullscreen></iframe>
+  </div>
+
 </div>
 
 <!-- ===== Firebase ===== -->
@@ -189,27 +168,36 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const presenceRef = firebase.database().ref(".info/connected");
 
-let currentCode = "";
+let currentCode="";
+
+const links={
+  1:"https://mandoosports.yoo7.com/h27-html?id=aHR0cHM6Ly9saXZlLm1hbmRvcGMyMDE5LndvcmtlcnMuZGV2Lz91cmw9aHR0cDovL2hldDAwMC40cm91d2FuZGEtc2hvcC5zdG9yZS9saXZlLzkxODQ1NDU3ODAwMS9pbmRleC5tM3U4",
+  2:"https://mandoosports.yoo7.com/h27-html?id=aHR0cHM6Ly9saXZlLm1hbmRvcGMyMDE5LndvcmtlcnMuZGV2Lz91cmw9aHR0cDovL2hldDAwMC40cm91d2FuZGEtc2hvcC5zdG9yZS9saXZlLzY5ODU0MjExL2luZGV4Lm0zdTg=",
+  3:"https://mandoosports.yoo7.com/h27-html?id=aHR0cHM6Ly9saXZlLm1hbmRvcGMyMDE5LndvcmtlcnMuZGV2Lz91cmw9aHR0cDovL2hldDAwMC40cm91d2FuZGEtc2hvcC5zdG9yZS9saXZlLzY0NTU4NzcwMC9pbmRleC5tM3U4",
+  4:"https://mandoosports.yoo7.com/h27-html?id=aHR0cHM6Ly9saXZlLm1hbmRvcGMyMDE5LndvcmtlcnMuZGV2Lz91cmw9aHR0cDovL2hldDAwMC40cm91d2FuZGEtc2hvcC5zdG9yZS9saXZlLzk3ODc0ODg4NDcvaW5kZXgubTN1OA=="
+};
 
 function unlock(){
-  const code = document.getElementById("lockCode").value.trim();
+  const code=document.getElementById("lockCode").value.trim();
   if(!code) return;
 
   db.ref("codes/"+code).get().then(snap=>{
-    if(!snap.exists()){showError();return;}
-    const data = snap.val();
-    if(!data.active || data.visits<=0){showError();return;}
+    if(!snap.exists()||!snap.val().active||snap.val().visits<=0){
+      document.getElementById("error").style.display="block";
+      return;
+    }
 
-    currentCode = code;
+    currentCode=code;
+    const data=snap.val();
     db.ref("codes/"+code+"/visits").set(data.visits-1);
 
-    document.getElementById("userName").innerText = data.name;
-    document.getElementById("visitsCount").innerText = data.visits-1;
+    document.getElementById("userName").innerText=data.name;
+    document.getElementById("visitsCount").innerText=data.visits-1;
 
     document.getElementById("lockScreen").style.display="none";
     document.getElementById("content").style.display="block";
 
-    const onlineRef = db.ref("codes/"+code+"/online");
+    const onlineRef=db.ref("codes/"+code+"/online");
     presenceRef.on("value",s=>{
       if(s.val()===true){
         onlineRef.set(true);
@@ -222,26 +210,24 @@ function unlock(){
 }
 
 function watchStatus(){
-  db.ref("codes/"+currentCode).on("value", snap=>{
-    if(!snap.exists() || !snap.val().active || snap.val().visits<=0){
-      logout();
-      return;
+  db.ref("codes/"+currentCode).on("value",snap=>{
+    if(!snap.exists()||!snap.val().active||snap.val().visits<=0){
+      location.reload();
     }
-    document.getElementById("visitsCount").innerText = snap.val().visits;
+    document.getElementById("visitsCount").innerText=snap.val().visits;
   });
 }
 
-function logout(){
-  if(currentCode){
-    db.ref("codes/"+currentCode+"/online").set(false);
-  }
-  document.getElementById("content").style.display="none";
-  document.getElementById("lockScreen").style.display="flex";
-  document.getElementById("error").style.display="block";
+function openChannel(n){
+  document.getElementById("channelsBox").style.display="none";
+  document.getElementById("playerBox").style.display="block";
+  document.getElementById("playerFrame").src=links[n];
 }
 
-function showError(){
-  document.getElementById("error").style.display="block";
+function backToChannels(){
+  document.getElementById("playerFrame").src="";
+  document.getElementById("playerBox").style.display="none";
+  document.getElementById("channelsBox").style.display="grid";
 }
 </script>
 
