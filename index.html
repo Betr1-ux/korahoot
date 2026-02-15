@@ -86,19 +86,16 @@ body{
 }
 .visits{color:#00ff99;font-weight:bold}
 
-/* Menus */
+/* Menus (SCROLL FIX ONLY) */
 .channels{
   padding:15px;
   display:grid;
   grid-template-columns:1fr;
   gap:12px;
-
-  /* ✅ التعديل الوحيد */
-  max-height:calc(100vh - 60px);
   overflow-y:auto;
+  max-height:calc(100vh - 60px);
   -webkit-overflow-scrolling:touch;
 }
-
 .channel-btn{
   background:#1a1a1a;
   padding:15px;
@@ -110,20 +107,10 @@ body{
   border:1px solid #333;
 }
 .channel-btn:hover{background:#0077ff}
-.back-top{
-  cursor:pointer;
-  color:#00aaff;
-  font-weight:bold;
-}
+.back-top{cursor:pointer;color:#00aaff;font-weight:bold}
 
 /* Player */
-#playerBox{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:#000;
-  z-index:5000;
-}
+#playerBox{display:none;position:fixed;inset:0;background:#000;z-index:5000}
 iframe{width:100%;height:100%;border:none}
 .back-btn{
   position:absolute;
@@ -142,20 +129,18 @@ iframe{width:100%;height:100%;border:none}
 <body>
 <div class="bg"></div>
 
-<!-- Login -->
 <div id="lockScreen">
   <div class="lock-box">
     <h3>🔐 تسجيل الدخول</h3>
     <input id="lockCode" placeholder="أدخل كود التفعيل">
     <button onclick="unlock()">دخول</button>
-    <div id="error">أتمني تكتب الباسورد الصحيح ان ليعمل حمل الكود الجديد</div>
+    <div id="error">الكود غير صالح</div>
   </div>
 </div>
 
-<!-- Content -->
 <div id="content">
   <div class="top-header">
-    <div><b>Sports TV</b></div>
+    <b>Sports TV</b>
     <div class="visits">👤 <span id="userName">---</span> | زيارات: <span id="visitsCount">0</span></div>
   </div>
 
@@ -187,7 +172,6 @@ iframe{width:100%;height:100%;border:none}
   </div>
 </div>
 
-<!-- Player -->
 <div id="playerBox">
   <div class="back-btn" onclick="backFromPlayer()">⬅ رجوع</div>
   <iframe id="playerFrame" allowfullscreen></iframe>
@@ -203,7 +187,22 @@ firebase.initializeApp({
 });
 const db=firebase.database();
 
-const links={/* نفس الروابط بدون أي تغيير */};
+const links={
+1:"https://mandoosports.yoo7.com/h27-html?id=aHR0cHM6Ly9tYW5kby5tb2hhbWVkYWJvbWFsZWs2MzIud29ya2Vycy5kZXYvP3VybD1odHRwOi8vaGV0MDAwLjRyb3V3YW5kYS1zaG9wLnN0b3JlL2xpdmUvOTE4NDU0NTc4MDAxL2luZGV4Lm0zdTg",
+2:"https://mandoosports.yoo7.com/h27-html?id=aHR0cHM6Ly9tYW5kb3Nwb3J0Lm1hbmRvcGMyMDE5LndvcmtlcnMuZGV2Lz91cmw9aHR0cDovL2hldDAwMC40cm91d2FuZGEtc2hvcC5zdG9yZS9saXZlLzY5ODU0MjExL2luZGV4Lm0zdTg",
+3:"https://mandoosports.yoo7.com/h27-html?id=aHR0cHM6Ly9tYW5kb3Nwb3J0Lm1hbmRvcGMyMDE5LndvcmtlcnMuZGV2Lz91cmw9aHR0cDovL2hldDAwMC40cm91d2FuZGEtc2hvcC5zdG9yZS9saXZlLzY0NTU4NzcwMC9pbmRleC5tM3U4",
+4:"https://mandoosports.yoo7.com/h27-html?id=aHR0cHM6Ly9tYW5kby5tb2hhbWVkYWJvbWFsZWs2MzIud29ya2Vycy5kZXYvP3VybD1odHRwOi8vaGV0MDAwLjRyb3V3YW5kYS1zaG9wLnN0b3JlL2xpdmUvOTc4NzQ4ODg0Ny9pbmRleC5tM3U4",
+5:"https://mandoosports.yoo7.com/h27-html?id=aHR0cHM6Ly9tYW5kb3Nwb3J0Lm1hbmRvcGMyMDE5LndvcmtlcnMuZGV2Lz91cmw9aHR0cDovL2hldDAwMC40cm91d2FuZGEtc2hvcC5zdG9yZS9saXZlLzYxMDMwMzAzMC9pbmRleC5tM3U4",
+6:"https://mandoosports.yoo7.com/h27-html?id=aHR0cHM6Ly9tYW5kb3Nwb3J0Lm1hbmRvcGMyMDE5LndvcmtlcnMuZGV2Lz91cmw9aHR0cDovL2hldDAwMC40cm91d2FuZGEtc2hvcC5zdG9yZS9saXZlLzE1MTUwMDAwMDAvaW5kZXgubTN1OA",
+7:"https://mandoosports.yoo7.com/h27-html?id=aHR0cHM6Ly9tYW5kb3Nwb3J0Lm1hbmRvcGMyMDE5LndvcmtlcnMuZGV2Lz91cmw9aHR0cDovL2hldDAwMC40cm91d2FuZGEtc2hvcC5zdG9yZS9saXZlLzMzNTIzNTEwL2luZGV4Lm0zdTg",
+8:"https://mandoosports.yoo7.com/h27-html?id=aHR0cHM6Ly9tYW5kb3Nwb3J0Lm1hbmRvcGMyMDE5LndvcmtlcnMuZGV2Lz91cmw9aHR0cDovL2hldDAwMC40cm91d2FuZGEtc2hvcC5zdG9yZS9saXZlLzk5NjI1MTAwMC9pbmRleC5tM3U4",
+101:"https://mandoosports.yoo7.com/h27-html?id=https://shoottvlives.sddhagd1.workers.dev/?url=https://mejarhosting.cfd/posttv1080p/ch01/master.m3u8",
+102:"https://mandoosports.yoo7.com/h27-html?id=https://shoottvlives.sddhagd1.workers.dev/?url=https://mejarhosting.cfd/posttv1080p/ch02/master.m3u8",
+103:"https://mandoosports.yoo7.com/h27-html?id=https://shoottvlives.sddhagd1.workers.dev/?url=https://mejarhosting.cfd/posttv1080p/ch03/master.m3u8",
+104:"https://mandoosports.yoo7.com/h27-html?id=https://shoottvlives.sddhagd1.workers.dev/?url=https://mejarhosting.cfd/posttv1080p/ch04/master.m3u8",
+105:"https://mandoosports.yoo7.com/h27-html?id=https://shoottvlives.sddhagd1.workers.dev/?url=https://mejarhosting.cfd/posttv1080p/ch05/master.m3u8",
+106:"https://mandoosports.yoo7.com/h27-html?id=https://shoottvlives.sddhagd1.workers.dev/?url=https://mejarhosting.cfd/posttv1080p/ch06/master.m3u8"
+};
 
 function unlock(){
   const code=lockCode.value.trim();
@@ -225,16 +224,8 @@ function unlock(){
 function openBein(){mainMenu.style.display="none";beinMenu.style.display="grid";}
 function openPost(){mainMenu.style.display="none";postMenu.style.display="grid";}
 function backMain(){beinMenu.style.display="none";postMenu.style.display="none";mainMenu.style.display="grid";}
-function openChannel(n){
-  content.style.display="none";
-  playerBox.style.display="block";
-  playerFrame.src=links[n];
-}
-function backFromPlayer(){
-  playerFrame.src="";
-  playerBox.style.display="none";
-  content.style.display="block";
-}
+function openChannel(n){content.style.display="none";playerBox.style.display="block";playerFrame.src=links[n];}
+function backFromPlayer(){playerFrame.src="";playerBox.style.display="none";content.style.display="block";}
 </script>
 
 </body>
